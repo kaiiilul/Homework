@@ -1,37 +1,44 @@
-# 41143263
+# 41343140
 
 作業一
-
+# 第一題Ackermann函數
 ## 解題說明
 
-本題要求實現一個遞迴函式，計算從 $1$ 到 $n$ 的連加總和。
+Ackermann是一個很有名的遞迴函數。它對我來說是一個很特別又有趣的一個數學遞迴函數，而且它並不是一個普通的遞迴，而是一個可以瘋狂成倍的增長，這種增長的速度真的讓人很驚艷。
+
+Ackermann函數就是一個無底洞，不只增長的十分迅速，計算起來還無窮無盡。
+
+此題目要求我們實作一個遞迴的Ackermann函數，並做一個非遞迴的演算法。
 
 ### 解題策略
 
-1. 使用遞迴函式將問題拆解為更小的子問題：
-   $$\Sigma(n) = n + \Sigma(n-1)$$
-2. 當 $n \leq 1$ 時，返回 $n$ 作為遞迴的結束條件。  
-3. 主程式呼叫遞迴函式，並輸出計算結果。
+1. 首先先理解Ackermann函數是如何運作的並實際算幾次。
+2. 先處理我覺得比較簡單的遞迴寫法。
+3. 在處理我覺得比較複雜的非遞迴寫法。
 
 ## 程式實作
 
-以下為主要程式碼：
+以下為Ackermann函數遞迴寫法的主要程式碼：
 
 ```cpp
 #include <iostream>
 using namespace std;
 
-int sigma(int n) {
-    if (n < 0)
-        throw "n < 0";
-    else if (n <= 1)
-        return n;
-    return n + sigma(n - 1);
+int akm(int m, int n) {
+    if (m == 0)//當m=0時，回傳答案為n+1
+        return n + 1;
+    else if (n == 0)//當m!=0且n=0時，遞迴計算akm(m-1,1)
+        return akm(m - 1, 1);
+    else//當沒有符合上述的兩個條件，也就是當m!=0且n=!0時，遞迴計算akm(m-1,akm(m,n-1))
+        return akm(m - 1, akm(m, n - 1));
 }
 
 int main() {
-    int result = sigma(3);
-    cout << result << '\n';
+    int m, n;
+    cout << "輸入m和n: ";
+    cin >> m >> n;//輸入自己要算的數值
+    cout << "Ackermann(" << m << ", " << n << ") = " << akm(m, n) << endl;//輸出答案
+    return 0;
 }
 ```
 
