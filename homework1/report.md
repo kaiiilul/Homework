@@ -139,85 +139,65 @@ Ackermann函數並不是一個簡單的遞迴，因為m,n的增加會導致結�
 # 第二題集合的冪集
 ## 解題說明
 
-Ackermann是一個很有名的遞迴函數。它對我來說是一個很特別又有趣的一個數學遞迴函數，而且它並不是一個普通的遞迴，而是一個可以瘋狂成倍的增長，這種增長的速度真的讓人很驚艷。
-
-Ackermann函數就是一個無底洞，不只增長的十分迅速，計算起來還無窮無盡。
-
-此題目要求我們實作一個遞迴的Ackermann函數，並做一個非遞迴的演算法。
+冪集是某個集合的所有子集的集合，我會把他看成集合中所有組合的可能。這個問題要我們用遞迴來做一個集合的冪集。。
 
 ### 解題策略
 
-1. 首先先理解Ackermann函數是如何運作的並實際算幾次。
-2. 先處理我覺得比較簡單的遞迴寫法。
-3. 在處理我覺得比較複雜的非遞迴寫法。
+用動態配置或是暫存陣列，每次都只保留當前路徑。這樣可以省二維陣列所有子集合，可以避免大量記憶體空間。
 
 ## 程式實作
 
-以下為Ackermann函數遞迴寫法的主要程式碼：
+以下為集合的冪集的主要程式碼：
 
 ```cpp
 #include <iostream>
+#include <string>
 using namespace std;
 
-int akm(int m, int n) {
-    if (m == 0)//當m=0時，回傳答案為n+1
-        return n + 1;
-    else if (n == 0)//當m!=0且n=0時，遞迴計算akm(m-1,1)
-        return akm(m - 1, 1);
-    else//當沒有符合上述的兩個條件，也就是當m!=0且n=!0時，遞迴計算akm(m-1,akm(m,n-1))
-        return akm(m - 1, akm(m, n - 1));
-}
+/*
+ * X[]：原始集合元素陣列
+ * Y[]：目前組成中的子集合
+ * i：目前處理到的索引位置
+ * n：原始集合的大小
+ * t：目前子集合的長度（Y[] 的實際有效長度）
+ */
 
-int main() {
-    int m, n;
-    cout << "輸入m和n: ";
-    cin >> m >> n;//輸入自己要算的數值
-    cout << "Ackermann(" << m << ", " << n << ") = " << akm(m, n) << endl;//輸出答案
-    return 0;
-}
-```
-
-以下為Ackermann函數非遞迴寫法的主要程式碼：
-
-```cpp
-#include <iostream>
-using namespace std;
-
-int akmnr(int m, int n) {
-    const int MAX = 1000;//定義堆疊的上限，不能太小不然會堆疊溢出
-    int stack[MAX];//宣告一個整數陣列用來模擬堆疊
-    int top = 0;//記錄堆疊頂端，然後把初始設為0
-
-    stack[top++] = m;//把m給推到堆疊裡面
-
-    while (top > 0) {    //當堆疊有東西的時候才繼續執行
-        m = stack[--top]; // pop
-
-        if (m == 0) {    //當m=0時，n=n+1
-            n = n + 1;
+void ps(string X[], string Y[], int i, int n, int t) {    
+    if (i == n) {//遞迴終止條件
+        cout << "{";
+        for (int j = 0; j < t; j++) {
+            cout << Y[j];
+            if (j != t - 1) cout << ",";
         }
-        else if (n == 0) {    //當m!=0且n=0時
-            n = 1;
-            stack[top++] = m - 1;//將m-1推入堆疊，準備計算A(m-1, 1)
-        }
-        else {
-            stack[top++] = m - 1;//A(m-1, ...)
-            stack[top++] = m;//先處理A(m, n-1)
-            n = n - 1; //計算A(m, n-1)
-        }
+        cout << "}" << endl; //輸出子集合結尾並換行
+        return;
     }
-
-    return n;
+    ps(X, Y, i + 1, n, t);//不選擇X[i]，直接遞迴到下一個元素
+                          //選擇X[i]，將其加入子集合Y[]，再遞迴
+    Y[t] = X[i];                    
+    ps(X, Y, i + 1, n, t + 1);     
 }
 
 int main() {
-    int m, n;
-    cout << "輸入m和n: ";
-    cin >> m >> n;//輸入自己要算的數值
-    cout << "Ackermann(" << m << ", " << n << ") = " << akmnr(m, n) << endl;//輸出答案
+    int n;
+    cout << "請輸入幾個數 : ";
+    cin >> n;//輸入集合大小
+    string* X = new string[n];
+    string* Y = new string[n];
+    cout << "輸入要的集合元素 : ";
+    for (int i = 0; i < n; i++) {
+        cin >> X[i];
+    }
+    cout << "集合的冪集是:" << endl;
+    ps(X, Y, 0, n, 0);
+    
+    delete[] X; //清除動態配置的記憶體
+    delete[] Y;
+
     return 0;
 }
 ```
+
 
 ## 效能分析
 
