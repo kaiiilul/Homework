@@ -252,28 +252,73 @@ O(n)
 
 ### 測試案例
 
-| 測試案例 | 輸入參數 $m,n$ | 預期輸出 | 實際輸出 |
+| 測試案例 | 輸入參數  | 預期輸出 | 實際輸出 |
 |----------|--------------|----------|----------|
-| 測試一   | $m=0, n=4$      | 5        | 5        |
-| 測試二   | $m=1, n=1$      | 3        | 3        |
-| 測試三   | $m=2, n=3$      | 9        | 9        |
-| 測試四   | $m=3, n=2$      | 29       | 29       |
+| 測試一   | 3   3     | 2  5        | 2  5       |
+|          |   5   5   |  4  3       |    4  3      |
+|          |   -1   -1 |   5  5     |      5  5     |
+|          |   2   5   | -2  5      |    -2  5      |
+|          |   1   3   |  2  3     |     2  3      |
+|          | -1   -1   |   5   5    |     5   5       |
+|          |        |   11  8    |    11  8      |
+|          |         |    3  6   |      3  6     |
+|          |        |  10  10    |       10  10   |
+|          |    X=2     |    184  72    |     184  72     |
 
 ### 編譯與執行指令
 
 ```shell
-$ g++ akm.cpp -std=c++17 -o akm.exe
-$ .\akm.exe
-輸入m和n:0 4
-Ackermann(0, 4) = 5
-輸入m和n:2 3
-Ackermann(2, 3) = 9
+$ g++ Polynomial 1&2.cpp -std=c++17 -o Polynomial 1&2.exe
+$ .\Polynomial 1&2.exe
+輸入第一個多項式:
+輸入一個項目 (係數 指數)，輸入 -1 -1 結束:
+3 3
+5 5
+-1 -1
+輸入第二個多項式:
+輸入一個項目 (係數 指數)，輸入 -1 -1 結束:
+2 5
+1 3
+-1 -1
+加法結果:
+Polynomial Details:
+  Term 1:
+    Coefficient: 2
+    Exponent: 5
+  Term 2:
+    Coefficient: 4
+    Exponent: 3
+  Term 3:
+    Coefficient: 5
+    Exponent: 5
+減法結果:
+Polynomial Details:
+  Term 1:
+    Coefficient: -2
+    Exponent: 5
+  Term 2:
+    Coefficient: 2
+    Exponent: 3
+  Term 3:
+    Coefficient: 5
+    Exponent: 5
+乘法結果:
+Polynomial Details:
+  Term 1:
+    Coefficient: 11
+    Exponent: 8
+  Term 2:
+    Coefficient: 3
+    Exponent: 6
+  Term 3:
+    Coefficient: 10
+    Exponent: 10
+輸入評估點 x 的值: 2
+第一個多項式在 x = 2 的值為: 184
+第二個多項式在 x = 2 的值為: 72
 ```
 
-### 結論
 
-遞迴和非遞迴的執行結果都相同，但要注意的一個點是當m>=4時程式有可能會崩潰，所以在輸入時可能要多加注意一下。
-而m>4我是真的有遇過，考試時教授說太大的要懂得跳過，小考有一題就是（6，0）那個真的完全算不出來。
 
 ## 申論及開發報告
 
