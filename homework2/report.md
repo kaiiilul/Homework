@@ -1,85 +1,227 @@
 # 41343140
 
-作業一
-# 第一題Ackermann函數
-## 解題說明
+作業二
+# 問題一
+## 實作Polynomial 類別，根據問題1和問題2提供的抽象資料類別（ADT）和私有數據成員，實現一個Polynomial 類別
 
-Ackermann是一個很有名的遞迴函數。它對我來說是一個很特別又有趣的一個數學遞迴函數，而且它並不是一個普通的遞迴，而是一個可以瘋狂成倍的增長，這種增長的速度真的讓人很驚艷。
+Polynomial 類別代表的是多項式，它需要正確的成員來儲存每個多項式的指數以及係數。
 
-Ackermann函數就是一個無底洞，不只增長的十分迅速，計算起來還無窮無盡。
+我來舉個例子：5x²+3x+1
 
-此題目要求我們實作一個遞迴的Ackermann函數，並做一個非遞迴的演算法。
+這時候它的指數就為：［2,1,0］
 
-### 解題策略
+而係數就為：［5,3,1］
 
-1. 首先先理解Ackermann函數是如何運作的並實際算幾次。
-2. 先處理我覺得比較簡單的遞迴寫法。
-3. 在處理我覺得比較複雜的非遞迴寫法。
+
+這時候就會發現我們的設計目標就知道了
+
+首先：運用私有的成員來儲存指數還有係數。
+
+再來：提供接口添加、刪除又或者操作多項式的項目。
+
+最後：只一個支援多項式的輸入以及輸出。
+
+### 所需要設計的東西
+
+#### 1.多項式的基本結構：
+
+其中包含了指數和係數的儲存，以及提供給多項式輸入以及輸出的功能。
+
+#### 2.多項式的加法功能：
+
+要去完成兩個多項式的加法，當返回一個新的多項式時，視為一個加法結果。
+
+#### 3.多項式的乘法功能：
+
+要去完成兩個多項式的每一項逐項相乘，然後將最後得到的結果去整理成一個新的多項式。
+
+#### 4.Eval 函數在給定的點x，去計算多項式的值：
+
+這個是多項式評估的功能，通常會用在算p(x)的結果。
+
+# 問題二
+## 用C++來寫輸入以及輸出多項式，這些函數需要支持多項式的輸入以及輸出，且函數需要重載<<和>>運算符號
+
+### 這個問題我們需要設計兩個重載運算符號：
+
+#### 1.>>運算符號：
+
+這個符號是作用於從輸入來讀取多項式的資料。
+
+#### 2.<<運算符號：
+
+這個符號是作用於輸出多項式的格式化表示。
 
 ## 程式實作
 
-以下為Ackermann函數遞迴寫法的主要程式碼：
+以下為Polynomial問題一&二的主要程式碼：
 
 ```cpp
 #include <iostream>
+#include <cmath> // 為了使用 pow 函數計算冪次
 using namespace std;
 
-int akm(int m, int n) {
-    if (m == 0)//當m=0時，回傳答案為n+1
-        return n + 1;
-    else if (n == 0)//當m!=0且n=0時，遞迴計算akm(m-1,1)
-        return akm(m - 1, 1);
-    else//當沒有符合上述的兩個條件，也就是當m!=0且n=!0時，遞迴計算akm(m-1,akm(m,n-1))
-        return akm(m - 1, akm(m, n - 1));
-}
+// 定義 Polynomial 類別
 
-int main() {
-    int m, n;
-    cout << "輸入m和n: ";
-    cin >> m >> n;//輸入自己要算的數值
-    cout << "Ackermann(" << m << ", " << n << ") = " << akm(m, n) << endl;//輸出答案
-    return 0;
-}
-```
+class Polynomial {
+private:
+    struct Term {
+        int coefficient; // 係數
+        int exponent;    // 指數
+    };
 
-以下為Ackermann函數非遞迴寫法的主要程式碼：
+    Term terms[100]; // 使用靜態陣列存儲最多 100 項
+    int termCount;   // 當前項目數量
 
-```cpp
-#include <iostream>
-using namespace std;
+public:
+    // Constructor
+    Polynomial() : termCount(0) {}
 
-int akmnr(int m, int n) {
-    const int MAX = 1000;//定義堆疊的上限，不能太小不然會堆疊溢出
-    int stack[MAX];//宣告一個整數陣列用來模擬堆疊
-    int top = 0;//記錄堆疊頂端，然後把初始設為0
-
-    stack[top++] = m;//把m給推到堆疊裡面
-
-    while (top > 0) {    //當堆疊有東西的時候才繼續執行
-        m = stack[--top]; // pop
-
-        if (m == 0) {    //當m=0時，n=n+1
-            n = n + 1;
-        }
-        else if (n == 0) {    //當m!=0且n=0時
-            n = 1;
-            stack[top++] = m - 1;//將m-1推入堆疊，準備計算A(m-1, 1)
+    // 添加項目
+    void addTerm(int coeff, int exp) {
+        if (termCount < 100) { // 確保不超出陣列大小
+            terms[termCount].coefficient = coeff;
+            terms[termCount].exponent = exp;
+            termCount++;
         }
         else {
-            stack[top++] = m - 1;//A(m-1, ...)
-            stack[top++] = m;//先處理A(m, n-1)
-            n = n - 1; //計算A(m, n-1)
+            cout << "超出多項式最大項數限制！" << endl;
         }
     }
 
-    return n;
-}
+    // 重載輸入運算符 >>
+    friend istream& operator>>(istream& in, Polynomial& poly) {
+        int coeff, exp;
+        cout << "輸入一個項目 (係數 指數)，輸入 -1 -1 結束: \n";
+        while (true) {
+            in >> coeff >> exp;
+            if (coeff == -1 && exp == -1) break;
+            poly.addTerm(coeff, exp);
+        }
+        return in;
+    }
+
+    // 重載輸出運算符 <<
+    friend ostream& operator<<(ostream& out, const Polynomial& poly) {
+        out << "Polynomial Details:\n";
+        for (int i = 0; i < poly.termCount; ++i) {
+            out << "  Term " << i + 1 << ":\n";
+            out << "    Coefficient: " << poly.terms[i].coefficient << "\n";
+            out << "    Exponent: " << poly.terms[i].exponent << "\n";
+        }
+        return out;
+    }
+
+    // 加法運算符重載
+    Polynomial operator+(const Polynomial& other) const {
+        return addOrSubtract(other, true); // 呼叫共用函式
+    }
+
+    // 減法運算符重載
+    Polynomial operator-(const Polynomial& other) const {
+        return addOrSubtract(other, false); // 呼叫共用函式
+    }
+
+    // 乘法運算符重載
+    Polynomial operator*(const Polynomial& other) const {
+        Polynomial result;
+
+        // 逐項相乘
+        for (int i = 0; i < termCount; ++i) {
+            for (int j = 0; j < other.termCount; ++j) {
+                int newCoeff = terms[i].coefficient * other.terms[j].coefficient;
+                int newExp = terms[i].exponent + other.terms[j].exponent;
+
+                // 合併相同指數的項
+                bool merged = false;
+                for (int k = 0; k < result.termCount; ++k) {
+                    if (result.terms[k].exponent == newExp) {
+                        result.terms[k].coefficient += newCoeff;
+                        merged = true;
+                        break;
+                    }
+                }
+                if (!merged) result.addTerm(newCoeff, newExp);
+            }
+        }
+
+        return result;
+    }
+
+    // 評估多項式在點 f 的值
+    float Eval(float f) const {
+        float result = 0.0;
+        for (int i = 0; i < termCount; ++i) {
+            result += terms[i].coefficient * pow(f, terms[i].exponent); // a_i * f^e_i
+        }
+        return result;
+    }
+
+private:
+    // 共用加法和減法的處理函式
+    Polynomial addOrSubtract(const Polynomial& other, bool isAddition) const {
+        Polynomial result;
+        int i = 0, j = 0;
+
+        while (i < termCount && j < other.termCount) {
+            if (terms[i].exponent == other.terms[j].exponent) {
+                int coeff = isAddition ? terms[i].coefficient + other.terms[j].coefficient
+                    : terms[i].coefficient - other.terms[j].coefficient;
+                if (coeff != 0) result.addTerm(coeff, terms[i].exponent);
+                i++;
+                j++;
+            }
+            else if (terms[i].exponent > other.terms[j].exponent) {
+                result.addTerm(terms[i].coefficient, terms[i].exponent);
+                i++;
+            }
+            else {
+                int coeff = isAddition ? other.terms[j].coefficient : -other.terms[j].coefficient;
+                result.addTerm(coeff, other.terms[j].exponent);
+                j++;
+            }
+        }
+
+        while (i < termCount) result.addTerm(terms[i].coefficient, terms[i].exponent), i++;
+        while (j < other.termCount) {
+            int coeff = isAddition ? other.terms[j].coefficient : -other.terms[j].coefficient;
+            result.addTerm(coeff, other.terms[j].exponent), j++;
+        }
+
+        return result;
+    }
+};
 
 int main() {
-    int m, n;
-    cout << "輸入m和n: ";
-    cin >> m >> n;//輸入自己要算的數值
-    cout << "Ackermann(" << m << ", " << n << ") = " << akmnr(m, n) << endl;//輸出答案
+    Polynomial p1, p2;
+
+    // 輸入兩個多項式
+    cout << "輸入第一個多項式:\n";
+    cin >> p1;
+    cout << "輸入第二個多項式:\n";
+    cin >> p2;
+
+    // 加
+    Polynomial sum = p1 + p2;
+    cout << "加法結果:\n" << sum;
+
+    // 減
+    Polynomial diff = p1 - p2;
+    cout << "減法結果:\n" << diff;
+
+    // 乘
+    Polynomial product = p1 * p2;
+    cout << "乘法結果:\n" << product;
+
+    // 讓使用者輸入評估點
+    float f;
+    cout << "輸入評估點 x 的值: ";
+    cin >> f;
+
+    // 評估
+    cout << "第一個多項式在 x = " << f << " 的值為: " << p1.Eval(f) << endl;
+    cout << "第二個多項式在 x = " << f << " 的值為: " << p2.Eval(f) << endl;
+
     return 0;
 }
 ```
