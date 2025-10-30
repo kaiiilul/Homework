@@ -1,39 +1,40 @@
 #include <iostream>
-#include <cmath> // ç‚ºäº†ä½¿ç”¨ pow å‡½æ•¸è¨ˆç®—å†ªæ¬¡
+#include <cmath> // ¬°¤F¨Ï¥Î pow ¨ç¼Æ­pºâ¾­¦¸
 using namespace std;
 
-// å®šç¾© Polynomial é¡åˆ¥
+// ©w¸q Polynomial Ãş§O
+
 
 class Polynomial {
 private:
     struct Term {
-        int coefficient; // ä¿‚æ•¸
-        int exponent;    // æŒ‡æ•¸
+        int coefficient; // «Y¼Æ
+        int exponent;    // «ü¼Æ
     };
 
-    Term terms[100]; // ä½¿ç”¨éœæ…‹é™£åˆ—å­˜å„²æœ€å¤š 100 é …
-    int termCount;   // ç•¶å‰é …ç›®æ•¸é‡
+    Term terms[100]; // ¨Ï¥ÎÀRºA°}¦C¦sÀx³Ì¦h 100 ¶µ
+    int termCount;   // ·í«e¶µ¥Ø¼Æ¶q
 
 public:
     // Constructor
     Polynomial() : termCount(0) {}
 
-    // æ·»åŠ é …ç›®
+    // ²K¥[¶µ¥Ø
     void addTerm(int coeff, int exp) {
-        if (termCount < 100) { // ç¢ºä¿ä¸è¶…å‡ºé™£åˆ—å¤§å°
+        if (termCount < 100) { // ½T«O¤£¶W¥X°}¦C¤j¤p
             terms[termCount].coefficient = coeff;
             terms[termCount].exponent = exp;
             termCount++;
         }
         else {
-            cout << "è¶…å‡ºå¤šé …å¼æœ€å¤§é …æ•¸é™åˆ¶ï¼" << endl;
+            cout << "¶W¥X¦h¶µ¦¡³Ì¤j¶µ¼Æ­­¨î¡I" << endl;
         }
     }
 
-    // é‡è¼‰è¼¸å…¥é‹ç®—ç¬¦ >>
+    // ­«¸ü¿é¤J¹Bºâ²Å >>
     friend istream& operator>>(istream& in, Polynomial& poly) {
         int coeff, exp;
-        cout << "è¼¸å…¥ä¸€å€‹é …ç›® (ä¿‚æ•¸ æŒ‡æ•¸)ï¼Œè¼¸å…¥ -1 -1 çµæŸ: \n";
+        cout << "¿é¤J¤@­Ó¶µ¥Ø («Y¼Æ «ü¼Æ)¡A¿é¤J -1 -1 µ²§ô: \n";
         while (true) {
             in >> coeff >> exp;
             if (coeff == -1 && exp == -1) break;
@@ -42,7 +43,7 @@ public:
         return in;
     }
 
-    // é‡è¼‰è¼¸å‡ºé‹ç®—ç¬¦ <<
+    // ­«¸ü¿é¥X¹Bºâ²Å <<
     friend ostream& operator<<(ostream& out, const Polynomial& poly) {
         out << "Polynomial Details:\n";
         for (int i = 0; i < poly.termCount; ++i) {
@@ -53,27 +54,27 @@ public:
         return out;
     }
 
-    // åŠ æ³•é‹ç®—ç¬¦é‡è¼‰
+    // ¥[ªk¹Bºâ²Å­«¸ü
     Polynomial operator+(const Polynomial& other) const {
-        return addOrSubtract(other, true); // å‘¼å«å…±ç”¨å‡½å¼
+        return addOrSubtract(other, true); // ©I¥s¦@¥Î¨ç¦¡
     }
 
-    // æ¸›æ³•é‹ç®—ç¬¦é‡è¼‰
+    // ´îªk¹Bºâ²Å­«¸ü
     Polynomial operator-(const Polynomial& other) const {
-        return addOrSubtract(other, false); // å‘¼å«å…±ç”¨å‡½å¼
+        return addOrSubtract(other, false); // ©I¥s¦@¥Î¨ç¦¡
     }
 
-    // ä¹˜æ³•é‹ç®—ç¬¦é‡è¼‰
+    // ­¼ªk¹Bºâ²Å­«¸ü
     Polynomial operator*(const Polynomial& other) const {
         Polynomial result;
 
-        // é€é …ç›¸ä¹˜
+        // ³v¶µ¬Û­¼
         for (int i = 0; i < termCount; ++i) {
             for (int j = 0; j < other.termCount; ++j) {
                 int newCoeff = terms[i].coefficient * other.terms[j].coefficient;
                 int newExp = terms[i].exponent + other.terms[j].exponent;
 
-                // åˆä½µç›¸åŒæŒ‡æ•¸çš„é …
+                // ¦X¨Ö¬Û¦P«ü¼Æªº¶µ
                 bool merged = false;
                 for (int k = 0; k < result.termCount; ++k) {
                     if (result.terms[k].exponent == newExp) {
@@ -89,7 +90,7 @@ public:
         return result;
     }
 
-    // è©•ä¼°å¤šé …å¼åœ¨é» f çš„å€¼
+    // µû¦ô¦h¶µ¦¡¦bÂI f ªº­È
     float Eval(float f) const {
         float result = 0.0;
         for (int i = 0; i < termCount; ++i) {
@@ -99,7 +100,7 @@ public:
     }
 
 private:
-    // å…±ç”¨åŠ æ³•å’Œæ¸›æ³•çš„è™•ç†å‡½å¼
+    // ¦@¥Î¥[ªk©M´îªkªº³B²z¨ç¦¡
     Polynomial addOrSubtract(const Polynomial& other, bool isAddition) const {
         Polynomial result;
         int i = 0, j = 0;
@@ -136,33 +137,32 @@ private:
 int main() {
     Polynomial p1, p2;
 
-    // è¼¸å…¥å…©å€‹å¤šé …å¼
-    cout << "è¼¸å…¥ç¬¬ä¸€å€‹å¤šé …å¼:\n";
+    // ¿é¤J¨â­Ó¦h¶µ¦¡
+    cout << "¿é¤J²Ä¤@­Ó¦h¶µ¦¡:\n";
     cin >> p1;
-    cout << "è¼¸å…¥ç¬¬äºŒå€‹å¤šé …å¼:\n";
+    cout << "¿é¤J²Ä¤G­Ó¦h¶µ¦¡:\n";
     cin >> p2;
 
-    // åŠ 
+    // ¥[
     Polynomial sum = p1 + p2;
-    cout << "åŠ æ³•çµæœ:\n" << sum;
+    cout << "¥[ªkµ²ªG:\n" << sum;
 
-    // æ¸›
+    // ´î
     Polynomial diff = p1 - p2;
-    cout << "æ¸›æ³•çµæœ:\n" << diff;
+    cout << "´îªkµ²ªG:\n" << diff;
 
-    // ä¹˜
+    // ­¼
     Polynomial product = p1 * p2;
-    cout << "ä¹˜æ³•çµæœ:\n" << product;
+    cout << "­¼ªkµ²ªG:\n" << product;
 
-    // è®“ä½¿ç”¨è€…è¼¸å…¥è©•ä¼°é»
+    // Åı¨Ï¥ÎªÌ¿é¤Jµû¦ôÂI
     float f;
-    cout << "è¼¸å…¥è©•ä¼°é» x çš„å€¼: ";
+    cout << "¿é¤Jµû¦ôÂI x ªº­È: ";
     cin >> f;
 
-    // è©•ä¼°
-    cout << "ç¬¬ä¸€å€‹å¤šé …å¼åœ¨ x = " << f << " çš„å€¼ç‚º: " << p1.Eval(f) << endl;
-    cout << "ç¬¬äºŒå€‹å¤šé …å¼åœ¨ x = " << f << " çš„å€¼ç‚º: " << p2.Eval(f) << endl;
+    // µû¦ô
+    cout << "²Ä¤@­Ó¦h¶µ¦¡¦b x = " << f << " ªº­È¬°: " << p1.Eval(f) << endl;
+    cout << "²Ä¤G­Ó¦h¶µ¦¡¦b x = " << f << " ªº­È¬°: " << p2.Eval(f) << endl;
 
     return 0;
 }
-
