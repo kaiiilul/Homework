@@ -1,228 +1,300 @@
 # 41343140
 
-作業二
+作業三
 # 問題一
 ## 解題說明
-## 實作Polynomial 類別，根據問題1和問題2提供的抽象資料類別（ADT）和私有數據成員，實現一個Polynomial 類別
+## 開發一個 C++ 類別 Polynomial,這個是用來表示和操作具有整數係數的單變數多項式 (使用帶有頭節點的圓形鏈結串列)
 
-Polynomial 類別代表的是多項式，它需要正確的成員來儲存每個多項式的指數以及係數。
+多項式的每一項將以一個節點表示。因此,系統中的每個節點將包含以下三個資料成員:
 
-我來舉個例子：5x²+3x+1
+Polynomial 類別代表多項式,它需要有適當的成員來儲存多項式的係數與指數。
 
-這時候它的指數就為：［2,1,0］
+每個多項式將被表示為一個帶有頭節點的圓形鏈結串列。為了高效地刪除多項式,我們需要使用一個可用空間列表及其相關的功能。單變數多項式的外部(舉個例子像是輸入或輸出)表示形式假設為以下整數序列的格式:
 
-而係數就為：［5,3,1］
+## n,c1,e1,c2,e2,c3,e3,...,cn,en
 
+en:代表的是指數
 
-這時候就會發現我們的設計目標就知道了
+cn:代表的是係數
 
-首先：運用私有的成員來儲存指數還有係數。
+n:代表的是多項式的項數
 
-再來：提供接口添加、刪除又或者操作多項式的項目。
+### 設計的目標
 
-最後：只一個支援多項式的輸入以及輸出。
+#### 1.多項式的表示：
+
+    A.使用帶有頭節點的圓形連結串列來表示多項式，每個節點包含以下資料成員：
+
+        (a).係數，也就是coef，所代表的是每項的係數。
+
+        (b).指數，也就是exp，代表的是每一項的指數。
+
+        (c).連結指標，也就是link，用來指向下一個節點。
+
+#### 2.支持高效的操作：
+
+    A.多項式的刪除操作應該要高效，並且使用可用空間列表來管理內存。
+
+#### 3.輸入和輸出的數據格式：
+
+    A.整數序列的格式。
+
+    B.指數e1->e2->en 需要按照降序排列。
 
 ### 所需要設計的東西
 
-#### 1.多項式的基本結構：
+#### 1.資料結構設計：
 
-其中包含了指數和係數的儲存，以及提供給多項式輸入以及輸出的功能。
+    節點結構(Node):其中包含係數、指數、和指向下一節點的指標。
 
-#### 2.多項式的加法功能：
+    多項式類別(Polynomial):其中包含操作多項式的方法及鏈結串列的管理。
 
-要去完成兩個多項式的加法，當返回一個新的多項式時，視為一個加法結果。
+#### 2.必需功能的實現：
 
-#### 3.多項式的乘法功能：
+    插入多項式項(AddTerm):
 
-要去完成兩個多項式的每一項逐項相乘，然後將最後得到的結果去整理成一個新的多項式。
+        按指數降序插入新項。
 
-#### 4.Eval 函數在給定的點x，去計算多項式的值：
+        如果存在相同指數的項,合併其係數。
 
-這個是多項式評估的功能，通常會用在算p(x)的結果。
+        如果合併後係數為0,則刪除此項。
 
-# 問題二
-## 解題說明
-## 用C++來寫輸入以及輸出多項式，這些函數需要支持多項式的輸入以及輸出，且函數需要重載<<和>>運算符號
+    刪除多項式(Clear):
 
-### 這個問題我們需要設計兩個重載運算符號：
+        刪除多項式中的所有項,釋放鏈結串列所佔內存。
 
-#### 1.>>運算符號：
+#### 3.輸入與輸出：
 
-這個符號是作用於從輸入來讀取多項式的資料。
+    輸入多項式: 重載>> 運算子,將輸入格式轉換為鏈結串列。
+    
+    輸出多項式: 重載<<運算子,將鏈結串列轉換為外部表示形式。
 
-#### 2.<<運算符號：
+    #### 1.資料結構設計：
 
-這個符號是作用於輸出多項式的格式化表示。
+    節點結構(Node):其中包含係數、指數、和指向下一節點的指標。
+
+    多項式類別(Polynomial):其中包含操作多項式的方法及鏈結串列的管理。
+
+#### 4.多項式運算：
+
+    加法(+): 計算兩個多項式的和。
+
+    減法(-): 計算兩個多項式的差。
+
+    乘法(*): 計算兩個多項式的積。
+
+#### 5.多項式評估：
+
+    Evaluate(x):輸入變數的值,計算多項式在X處的值。
+
+#### 6.內存管理：
+
+    複製建構子: 複製多項式物件的內容。
+
+    解構子: 釋放多項式的內存。
+
+    賦值運算子重載: 支援多項式的賦值操作。
+
+要完成這份作業,我們需要實現一個Polynomial 類別,並提供多項式的輸入、輸出和基本運算功能(如加法、減法等)。
 
 ## 程式實作
 
-以下為Polynomial問題一&二的主要程式碼：
+以下為hw3 Polynomial主要程式碼：
 
 ```cpp
 #include <iostream>
-#include <cmath> // 為了使用 pow 函數計算冪次
+#include <cmath>
 using namespace std;
 
-// 定義 Polynomial 類別
+struct Node {
+    int coef; // 系數
+    int exp;  // 指數
+    Node* link; // 指向下一個節點的指標
+};
 
 class Polynomial {
 private:
-    struct Term {
-        int coefficient; // 係數
-        int exponent;    // 指數
-    };
-
-    Term terms[100]; // 使用靜態陣列存儲最多 100 項
-    int termCount;   // 當前項目數量
+    Node* head; // 頭節點
 
 public:
-    // Constructor
-    Polynomial() : termCount(0) {}
+    // 預設建構子
+    Polynomial() {
+        head = new Node{ 0, 0, nullptr };
+        head->link = head; // 圓形鏈結
+    }
 
-    // 添加項目
-    void addTerm(int coeff, int exp) {
-        if (termCount < 100) { // 確保不超出陣列大小
-            terms[termCount].coefficient = coeff;
-            terms[termCount].exponent = exp;
-            termCount++;
+    // 複製建構子
+    Polynomial(const Polynomial& a) {
+        head = new Node{ 0, 0, nullptr };
+        head->link = head;
+        Node* temp = a.head->link;
+        while (temp != a.head) {
+            addTerm(temp->coef, temp->exp);
+            temp = temp->link;
+        }
+    }
+
+    // 解構子
+    ~Polynomial() {
+        clear();
+        delete head;
+    }
+
+    // 清除鏈結串列
+    void clear() {
+        Node* temp = head->link;
+        while (temp != head) {
+            Node* del = temp;
+            temp = temp->link;
+            delete del;
+        }
+        head->link = head;
+    }
+
+    // 插入多項式項
+    void addTerm(int coef, int exp) {
+        Node* prev = head;
+        Node* curr = head->link;
+        while (curr != head && curr->exp > exp) {
+            prev = curr;
+            curr = curr->link;
+        }
+        if (curr != head && curr->exp == exp) {
+            curr->coef += coef; // 合併同類項
+            if (curr->coef == 0) {
+                prev->link = curr->link;
+                delete curr;
+            }
         }
         else {
-            cout << "超出多項式最大項數限制！" << endl;
+            Node* newNode = new Node{ coef, exp, curr };
+            prev->link = newNode;
         }
     }
 
-    // 重載輸入運算符 >>
-    friend istream& operator>>(istream& in, Polynomial& poly) {
-        int coeff, exp;
-        cout << "輸入一個項目 (係數 指數)，輸入 -1 -1 結束: \n";
-        while (true) {
-            in >> coeff >> exp;
-            if (coeff == -1 && exp == -1) break;
-            poly.addTerm(coeff, exp);
+    // 輸入運算子重載
+    friend std::istream& operator>>(std::istream& is, Polynomial& x) {
+        int n, coef, exp;
+        is >> n;
+        for (int i = 0; i < n; ++i) {
+            is >> coef >> exp;
+            x.addTerm(coef, exp);
         }
-        return in;
+        return is;
     }
 
-    // 重載輸出運算符 <<
-    friend ostream& operator<<(ostream& out, const Polynomial& poly) {
-        out << "Polynomial Details:\n";
-        for (int i = 0; i < poly.termCount; ++i) {
-            out << "  Term " << i + 1 << ":\n";
-            out << "    Coefficient: " << poly.terms[i].coefficient << "\n";
-            out << "    Exponent: " << poly.terms[i].exponent << "\n";
+    // 輸出運算子重載
+    friend std::ostream& operator<<(std::ostream& os, const Polynomial& x) {
+        Node* temp = x.head->link;
+        while (temp != x.head) {
+            if (temp != x.head->link && temp->coef > 0) os << " + ";
+            os << temp->coef << "x^" << temp->exp;
+            temp = temp->link;
         }
-        return out;
+        return os;
     }
 
-    // 加法運算符重載
-    Polynomial operator+(const Polynomial& other) const {
-        return addOrSubtract(other, true); // 呼叫共用函式
-    }
-
-    // 減法運算符重載
-    Polynomial operator-(const Polynomial& other) const {
-        return addOrSubtract(other, false); // 呼叫共用函式
-    }
-
-    // 乘法運算符重載
-    Polynomial operator*(const Polynomial& other) const {
+    // 加法運算子重載
+    Polynomial operator+(const Polynomial& b) const {
         Polynomial result;
-
-        // 逐項相乘
-        for (int i = 0; i < termCount; ++i) {
-            for (int j = 0; j < other.termCount; ++j) {
-                int newCoeff = terms[i].coefficient * other.terms[j].coefficient;
-                int newExp = terms[i].exponent + other.terms[j].exponent;
-
-                // 合併相同指數的項
-                bool merged = false;
-                for (int k = 0; k < result.termCount; ++k) {
-                    if (result.terms[k].exponent == newExp) {
-                        result.terms[k].coefficient += newCoeff;
-                        merged = true;
-                        break;
-                    }
-                }
-                if (!merged) result.addTerm(newCoeff, newExp);
+        Node* p1 = head->link;
+        Node* p2 = b.head->link;
+        while (p1 != head || p2 != b.head) {
+            if (p1 == head) {
+                result.addTerm(p2->coef, p2->exp);
+                p2 = p2->link;
             }
-        }
-
-        return result;
-    }
-
-    // 評估多項式在點 f 的值
-    float Eval(float f) const {
-        float result = 0.0;
-        for (int i = 0; i < termCount; ++i) {
-            result += terms[i].coefficient * pow(f, terms[i].exponent); // a_i * f^e_i
-        }
-        return result;
-    }
-
-private:
-    // 共用加法和減法的處理函式
-    Polynomial addOrSubtract(const Polynomial& other, bool isAddition) const {
-        Polynomial result;
-        int i = 0, j = 0;
-
-        while (i < termCount && j < other.termCount) {
-            if (terms[i].exponent == other.terms[j].exponent) {
-                int coeff = isAddition ? terms[i].coefficient + other.terms[j].coefficient
-                    : terms[i].coefficient - other.terms[j].coefficient;
-                if (coeff != 0) result.addTerm(coeff, terms[i].exponent);
-                i++;
-                j++;
+            else if (p2 == b.head || p1->exp > p2->exp) {
+                result.addTerm(p1->coef, p1->exp);
+                p1 = p1->link;
             }
-            else if (terms[i].exponent > other.terms[j].exponent) {
-                result.addTerm(terms[i].coefficient, terms[i].exponent);
-                i++;
+            else if (p1->exp < p2->exp) {
+                result.addTerm(p2->coef, p2->exp);
+                p2 = p2->link;
             }
             else {
-                int coeff = isAddition ? other.terms[j].coefficient : -other.terms[j].coefficient;
-                result.addTerm(coeff, other.terms[j].exponent);
-                j++;
+                result.addTerm(p1->coef + p2->coef, p1->exp);
+                p1 = p1->link;
+                p2 = p2->link;
             }
         }
+        return result;
+    }
 
-        while (i < termCount) result.addTerm(terms[i].coefficient, terms[i].exponent), i++;
-        while (j < other.termCount) {
-            int coeff = isAddition ? other.terms[j].coefficient : -other.terms[j].coefficient;
-            result.addTerm(coeff, other.terms[j].exponent), j++;
+    // 減法運算子重載
+    Polynomial operator-(const Polynomial& b) const {
+        Polynomial result;
+        Node* temp = b.head->link;
+        while (temp != b.head) {
+            result.addTerm(-temp->coef, temp->exp);
+            temp = temp->link;
         }
+        return *this + result;
+    }
 
+    // 乘法運算子重載
+    Polynomial operator*(const Polynomial& b) const {
+        Polynomial result;
+        Node* temp1 = head->link;
+        while (temp1 != head) {
+            Node* temp2 = b.head->link;
+            while (temp2 != b.head) {
+                result.addTerm(temp1->coef * temp2->coef, temp1->exp + temp2->exp);
+                temp2 = temp2->link;
+            }
+            temp1 = temp1->link;
+        }
+        return result;
+    }
+
+    // 賦值運算子重載
+    Polynomial& operator=(const Polynomial& a) {
+        if (this != &a) {
+            clear();
+            Node* temp = a.head->link;
+            while (temp != a.head) {
+                addTerm(temp->coef, temp->exp);
+                temp = temp->link;
+            }
+        }
+        return *this;
+    }
+
+    // 多項式計算
+    float Evaluate(float x) const {
+        float result = 0;
+        Node* temp = head->link;
+        while (temp != head) {
+            result += temp->coef * pow(x, temp->exp);
+            temp = temp->link;
+        }
         return result;
     }
 };
 
 int main() {
     Polynomial p1, p2;
-
-    // 輸入兩個多項式
-    cout << "輸入第一個多項式:\n";
+    cout << "輸入第一個多項式 (n c1 e1 c2 e2 ...): ";
     cin >> p1;
-    cout << "輸入第二個多項式:\n";
+    cout << "輸入第二個多項式 (n c1 e1 c2 e2 ...): ";
     cin >> p2;
 
-    // 加
+    cout << "P1: " << p1 << endl;
+    cout << "P2: " << p2 << endl;
+
     Polynomial sum = p1 + p2;
-    cout << "加法結果:\n" << sum;
+    cout << "P1 + P2: " << sum << endl;
 
-    // 減
     Polynomial diff = p1 - p2;
-    cout << "減法結果:\n" << diff;
+    cout << "P1 - P2: " << diff << endl;
 
-    // 乘
-    Polynomial product = p1 * p2;
-    cout << "乘法結果:\n" << product;
+    Polynomial prod = p1 * p2;
+    cout << "P1 * P2: " << prod << endl;
 
-    // 讓使用者輸入評估點
-    float f;
-    cout << "輸入評估點 x 的值: ";
-    cin >> f;
-
-    // 評估
-    cout << "第一個多項式在 x = " << f << " 的值為: " << p1.Eval(f) << endl;
-    cout << "第二個多項式在 x = " << f << " 的值為: " << p2.Eval(f) << endl;
+    float x;
+    cout << "輸入x的質來計算P1: ";
+    cin >> x;
+    cout << "P1(" << x << ") = " << p1.Evaluate(x) << endl;
 
     return 0;
 }
