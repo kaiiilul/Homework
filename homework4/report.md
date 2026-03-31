@@ -407,4 +407,17 @@ Node* deleteNode(Node* root, int k) {
 | 測試十二 | 10000 | 33,2.4835 | 33,2.4835 |
 
 
+測試輸出
 
+    n = 100, height = 14, log2(n) = 6.64386, ratio = 2.10721
+    n = 500, height = 18, log2(n) = 8.96578, ratio = 2.00763
+    n = 1000, height = 22, log2(n) = 9.96578, ratio = 2.20755
+    n = 2000, height = 25, log2(n) = 10.9658, ratio = 2.27982
+    n = 3000, height = 26, log2(n) = 11.5507, ratio = 2.25094
+    n = 4000, height = 26, log2(n) = 11.9658, ratio = 2.17286
+    n = 5000, height = 29, log2(n) = 12.2877, ratio = 2.36008
+    n = 6000, height = 31, log2(n) = 12.5507, ratio = 2.46997
+    n = 7000, height = 27, log2(n) = 12.7731, ratio = 2.11381
+    n = 8000, height = 33, log2(n) = 12.9658, ratio = 2.54516
+    n = 9000, height = 29, log2(n) = 13.1357, ratio = 2.20772
+    n = 10000, height = 33, log2(n) = 13.2877, ratio = 2.4835
