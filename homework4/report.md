@@ -11,7 +11,7 @@ Write a C++ abstract class similar to ADT 5.2 for the ADT MinPQ, which defines a
 然後做一個 MinHeap 類別，繼承 MinPQ 並完成所有功能
 
 ## 解題策略
-需要實作的函式:
+需要做的函式:
 
 IsEmpty():用來判斷是否為空
 
@@ -221,3 +221,138 @@ Heap 是實作優先佇列最常見的資料結構之一，其中 Min Heap 具�
     2.高度不穩定
     3.需要額外記憶體
     4.效能不如平衡樹穩定
+    
+# 問題二
+## 解題說明
+## Binary Search Tree
+(a.)Write a program to start with an initially empty binary search tree and make n random insertions. Use a uniform random number generator to obtain the values to be inserted. Measure the height of the resulting binary search tree and divide this height by log₂n. Do this for n = 100, 500, 1000, 2000, 3000, ..., 10,000. Plot the ratio height / log₂n as a function of n. The ratio should be approximately constant (around 2). Verify that this is so.
+
+隨機插入 + 高度分析
+
+## 解題策略
+需要做的東西:
+
+    1.建立空 BST
+    2.插入 n 個「隨機數」
+    3.計算樹的高度
+    4.計算height / log₂(n)
+    5.畫圖並觀察是否接近常數（約 ≈ 2）
+
+#### 然後(b.)刪除節點<，其實就是從 BST 刪除 key = k 的節點並分析時間複雜度
+## 解題策略
+
+    1.沒有子節點 → 直接刪除
+    2.有一個子節點 → 用子節點取代
+    3.有兩個子節點 → 找右子樹最小值（或左子最大值）取代，然後遞迴刪除
+
+## 程式實作
+
+以下為hw1 Binary Search Tree(a.)主要程式碼：
+
+```cpp
+#include <iostream>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
+using namespace std;
+
+struct Node {
+    int val;  // node 值 
+    Node* left;   //左子樹
+    Node* right;  //右子樹
+};
+
+Node* insert(Node* root, int x) {
+    if (root == nullptr) {
+        root = new Node;
+        root->val = x;
+        root->left = nullptr;
+        root->right = nullptr;
+        return root;
+    }
+    if (x < root->val)
+        root->left = insert(root->left, x);
+    else
+        root->right = insert(root->right, x);
+    return root;
+}
+
+int getHeight(Node* root) {
+    if (root == nullptr) return 0;
+    int l = getHeight(root->left);
+    int r = getHeight(root->right);
+    return max(l, r) + 1;
+}
+
+int getRandom(int min, int max) {
+    return rand() % (max - min + 1) + min;
+}
+
+int main() {
+    srand(time(0));
+
+    for (int n = 100; n <= 10000; n += 500) {
+        Node* root = nullptr;
+        for (int i = 0; i < n; i++) {
+            int x = getRandom(1, n * 10);
+            root = insert(root, x);
+        }
+        int h = getHeight(root);
+        double logn = log2(n);
+        double ratio = h / logn;
+        cout << "n = " << n << ", height = " << h << ", log2(n) = " << logn << ", ratio = " << ratio << endl;
+    }
+
+    return 0;
+}
+```
+以下為hw1 Binary Search Tree(b.)主要程式碼：
+
+```cpp
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int key;
+    Node* left;
+    Node* right;
+};
+
+Node* findMin(Node* root) {
+    while (root->left != nullptr)
+        root = root->left;
+    return root;
+}
+
+Node* deleteNode(Node* root, int k) {
+    if (root == nullptr) return nullptr;
+
+    if (k < root->key) {
+        root->left = deleteNode(root->left, k);
+    } else if (k > root->key) {
+        root->right = deleteNode(root->right, k);
+    } else {
+        // 找到節點
+        if (root->left == nullptr && root->right == nullptr) {
+            delete root;
+            return nullptr;
+        } else if (root->left == nullptr) {
+            Node* temp = root->right;
+            delete root;
+            return temp;
+        } else if (root->right == nullptr) {
+            Node* temp = root->left;
+            delete root;
+            return temp;
+        } else {
+            Node* temp = findMin(root->right);
+            root->key = temp->key;
+            root->right = deleteNode(root->right, temp->key);
+        }
+    }
+    return root;
+}
+```
+
+
+
