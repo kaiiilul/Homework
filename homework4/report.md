@@ -291,7 +291,21 @@ int getRandom(int min, int max) {
 int main() {
     srand(time(0));
 
-    for (int n = 100; n <= 10000; n += 500) {
+    int n=100;
+    	
+        Node* root = nullptr;
+        for (int i = 0; i < n; i++) {
+            int x = getRandom(1, n * 10);
+            root = insert(root, x);
+        }
+        int h = getHeight(root);
+        double logn = log2(n);
+        double ratio = h / logn;
+        cout << "n = " << n << ", height = " << h << ", log2(n) = " << logn << ", ratio = " << ratio << endl;
+    
+
+    for (int n =500; n <= 10000; n += 500) {
+    	
         Node* root = nullptr;
         for (int i = 0; i < n; i++) {
             int x = getRandom(1, n * 10);
@@ -302,7 +316,6 @@ int main() {
         double ratio = h / logn;
         cout << "n = " << n << ", height = " << h << ", log2(n) = " << logn << ", ratio = " << ratio << endl;
     }
-
     return 0;
 }
 ```
