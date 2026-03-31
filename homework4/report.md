@@ -47,198 +47,99 @@ Pop():用來刪除最小值
 
 ```cpp
 #include <iostream>
-#include <cmath>
+#include <vector>
+#include <stdexcept>
+
 using namespace std;
 
-struct Node {
-    int coef; // 系數
-    int exp;  // 指數
-    Node* link; // 指向下一個節點的指標
+template <class T>
+class MinPQ {
+public:
+    virtual ~MinPQ() {}
+    virtual bool IsEmpty() const = 0;             // 檢查是否為空
+    virtual const T& Top() const = 0;             // 取得最小值
+    virtual void Push(const T& item) = 0;         // 插入
+    virtual void Pop() = 0;                       //彈出
 };
 
-class Polynomial {
+template <class T>
+class MinHeap : public MinPQ<T> {
 private:
-    Node* head; // 頭節點
+    vector<T> heap; 
+    void HeapUp(int index) {
+        while (index > 0) {
+            int parent = (index - 1) / 2;
+            if (heap[index] >= heap[parent]) break;
+            swap(heap[index], heap[parent]);
+            index = parent;
+        }
+    }
+
+    void HeapDown(int index) {
+        int size = heap.size();
+        while (2 * index + 1 < size) {
+            int left = 2 * index + 1;
+            int right = 2 * index + 2;
+            int smallest = left;
+
+            if (right < size && heap[right] < heap[left])
+                smallest = right;
+
+            if (heap[index] <= heap[smallest]) break;
+            swap(heap[index], heap[smallest]);
+            index = smallest;
+        }
+    }
 
 public:
-    // 預設建構子
-    Polynomial() {
-        head = new Node{ 0, 0, nullptr };
-        head->link = head; // 圓形鏈結
+    bool IsEmpty() const override {  //（override）覆寫父類別的虛擬函式
+        return heap.empty();
     }
 
-    // 複製建構子
-    Polynomial(const Polynomial& a) {
-        head = new Node{ 0, 0, nullptr };
-        head->link = head;
-        Node* temp = a.head->link;
-        while (temp != a.head) {
-            addTerm(temp->coef, temp->exp);
-            temp = temp->link;
-        }
+    // 取得最小值
+    const T& Top() const override {
+        if (IsEmpty()) throw runtime_error("Heap 是空的");
+        return heap[0];
     }
 
-    // 解構子
-    ~Polynomial() {
-        clear();
-        delete head;
+    void Push(const T& item) override {
+        heap.push_back(item);
+        HeapUp(heap.size() - 1);
     }
 
-    // 清除鏈結串列
-    void clear() {
-        Node* temp = head->link;
-        while (temp != head) {
-            Node* del = temp;
-            temp = temp->link;
-            delete del;
-        }
-        head->link = head;
+    void Pop() override {
+        if (IsEmpty()) throw runtime_error("Heap 是空的");
+        heap[0] = heap.back();
+        heap.pop_back();
+        if (!IsEmpty())
+            HeapDown(0);
     }
 
-    // 插入多項式項
-    void addTerm(int coef, int exp) {
-        Node* prev = head;
-        Node* curr = head->link;
-        while (curr != head && curr->exp > exp) {
-            prev = curr;
-            curr = curr->link;
-        }
-        if (curr != head && curr->exp == exp) {
-            curr->coef += coef; // 合併同類項
-            if (curr->coef == 0) {
-                prev->link = curr->link;
-                delete curr;
-            }
-        }
-        else {
-            Node* newNode = new Node{ coef, exp, curr };
-            prev->link = newNode;
-        }
-    }
 
-    // 輸入運算子重載
-    friend std::istream& operator>>(std::istream& is, Polynomial& x) {
-        int n, coef, exp;
-        is >> n;
-        for (int i = 0; i < n; ++i) {
-            is >> coef >> exp;
-            x.addTerm(coef, exp);
+    void Print() const {
+        cout << "陣列內容為: ";
+        for (int i = 0; i < heap.size(); i++) {
+            cout << heap[i] << " ";
         }
-        return is;
-    }
-
-    // 輸出運算子重載
-    friend std::ostream& operator<<(std::ostream& os, const Polynomial& x) {
-        Node* temp = x.head->link;
-        while (temp != x.head) {
-            if (temp != x.head->link && temp->coef > 0) os << " + ";
-            os << temp->coef << "x^" << temp->exp;
-            temp = temp->link;
-        }
-        return os;
-    }
-
-    // 加法運算子重載
-    Polynomial operator+(const Polynomial& b) const {
-        Polynomial result;
-        Node* p1 = head->link;
-        Node* p2 = b.head->link;
-        while (p1 != head || p2 != b.head) {
-            if (p1 == head) {
-                result.addTerm(p2->coef, p2->exp);
-                p2 = p2->link;
-            }
-            else if (p2 == b.head || p1->exp > p2->exp) {
-                result.addTerm(p1->coef, p1->exp);
-                p1 = p1->link;
-            }
-            else if (p1->exp < p2->exp) {
-                result.addTerm(p2->coef, p2->exp);
-                p2 = p2->link;
-            }
-            else {
-                result.addTerm(p1->coef + p2->coef, p1->exp);
-                p1 = p1->link;
-                p2 = p2->link;
-            }
-        }
-        return result;
-    }
-
-    // 減法運算子重載
-    Polynomial operator-(const Polynomial& b) const {
-        Polynomial result;
-        Node* temp = b.head->link;
-        while (temp != b.head) {
-            result.addTerm(-temp->coef, temp->exp);
-            temp = temp->link;
-        }
-        return *this + result;
-    }
-
-    // 乘法運算子重載
-    Polynomial operator*(const Polynomial& b) const {
-        Polynomial result;
-        Node* temp1 = head->link;
-        while (temp1 != head) {
-            Node* temp2 = b.head->link;
-            while (temp2 != b.head) {
-                result.addTerm(temp1->coef * temp2->coef, temp1->exp + temp2->exp);
-                temp2 = temp2->link;
-            }
-            temp1 = temp1->link;
-        }
-        return result;
-    }
-
-    // 賦值運算子重載
-    Polynomial& operator=(const Polynomial& a) {
-        if (this != &a) {
-            clear();
-            Node* temp = a.head->link;
-            while (temp != a.head) {
-                addTerm(temp->coef, temp->exp);
-                temp = temp->link;
-            }
-        }
-        return *this;
-    }
-
-    // 多項式計算
-    float Evaluate(float x) const {
-        float result = 0;
-        Node* temp = head->link;
-        while (temp != head) {
-            result += temp->coef * pow(x, temp->exp);
-            temp = temp->link;
-        }
-        return result;
+        cout << endl;
     }
 };
-
 int main() {
-    Polynomial p1, p2;
-    cout << "輸入第一個多項式 (n c1 e1 c2 e2 ...): ";
-    cin >> p1;
-    cout << "輸入第二個多項式 (n c1 e1 c2 e2 ...): ";
-    cin >> p2;
+    MinHeap<int> h;
 
-    cout << "P1: " << p1 << endl;
-    cout << "P2: " << p2 << endl;
+    h.Push(5);  
+    h.Push(2); 
+    h.Push(8);  
+    h.Push(6);
+    h.Push(1);  
 
-    Polynomial sum = p1 + p2;
-    cout << "P1 + P2: " << sum << endl;
+    cout << "Heap content: ";
+    h.Print();  // 應該是 1 在最前面
 
-    Polynomial diff = p1 - p2;
-    cout << "P1 - P2: " << diff << endl;
-
-    Polynomial prod = p1 * p2;
-    cout << "P1 * P2: " << prod << endl;
-
-    float x;
-    cout << "輸入x的質來計算P1: ";
-    cin >> x;
-    cout << "P1(" << x << ") = " << p1.Evaluate(x) << endl;
+    cout << "Top: " << h.Top() << endl;  
+    h.Pop();
+    cout<<"------------"<<endl;
+    cout << "Top: " << h.Top() << endl; 
 
     return 0;
 }
@@ -246,31 +147,15 @@ int main() {
 
 ## 效能分析
 
-### 時間複雜度（輸入/輸出運算子重載）：
+### 時間複雜度：
 
-輸入/輸出運算子重載：O(n)
+    Top():O(1)
+    Push(x):O(log n)
+    Pop():O(log n)
+    所以全部的時間複雜度為：O(n log n)
 
-### 空間複雜度（加法）：
-
-輸入/輸出運算子重載：O(1)
-
-### 時間複雜度（加法）：
-
-加法：O(n+m)，其中n和m是兩個多項式的項數。
-
-### 空間複雜度（加法）：
-加法：O(k)
-
-### 空間複雜度（加法）：
-
-輸入/輸出運算子重載：O(1)
-
-### 時間複雜度（減法）：
-
-減法：O(m(n+m))
-
-### 時間複雜度（乘法）：
-乘法：O(n²*m²)
+### 空間複雜度：
+    heap：O(n)
 
 ## 測試與驗證
 
