@@ -122,7 +122,7 @@ vector<int> generateRandomData(int size) {
     return data;
 }
 
-// ⭐ 這個版本是印「全部」資料
+//這個版本是印「全部」資料
 void printData(const vector<int>& data) {
     cout << "[";
     for (size_t i = 0; i < data.size(); ++i) {
